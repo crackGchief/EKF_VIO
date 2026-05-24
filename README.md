@@ -1,2 +1,3 @@
 # EKF_VIO
-Создание VIO системы на сонове SVO+EKF
+Создание VIO системы на основе SVO+EKF
+Докер образ для arm64: crackgchief/svoarm64
