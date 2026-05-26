@@ -1,0 +1,13 @@
+GT файл:  /home/mononoki/EKF_VIO/trajectory_results/MH_01_easy.bag_gt.txt
+SVO файл: /home/mononoki/EKF_VIO/trajectory_results/MH_01_easy.bag_svo.txt
+Выравнивание: Sim3 (с коррекцией масштаба)
+GT поз: 2837
+SVO поз: 2837
+
+ATE (м):
+  RMSE:   0.2107
+  Mean:   0.1946
+  Median: 0.2062
+  Std:    0.0809
+  Max:    0.4352
+  Min:    0.0059

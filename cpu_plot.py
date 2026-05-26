@@ -17,6 +17,7 @@ if not vals:
 vals = np.array(vals)
 t    = np.arange(len(vals))
 avg  = vals.mean()
+maxi = np.max(vals)
 
 # ── Парсим svo.log ────────────────────────────────────────────────
 reinit_times = []
@@ -59,34 +60,29 @@ else:
     grouped_resets = []
     print("t_start.txt или svo.log не найден — без событий")
 
-# ── График ────────────────────────────────────────────────────────
+
+
+
 fig, ax = plt.subplots(figsize=(14, 5))
 
 ax.fill_between(t, vals, alpha=0.2, color='steelblue')
-ax.plot(t, vals, color='steelblue', lw=1.4, label='svo_node CPU%')
-ax.axhline(avg, color='red', ls='--', lw=1.4,
-           label=f'Среднее: {avg:.1f}%')
-ax.axhline(100, color='gray', ls=':', lw=0.8, alpha=0.5,
-           label='100% = 1 ядро')
+ax.plot(t, vals, label='svo_node CPU%')
+ax.axhline(avg, color='red', ls='--', label=f'Среднее: {avg:.1f}%')
+ax.axhline(maxi, color='gray', ls='--', label=f'Максимальное: {maxi:.1f}%')
 
 first_reset = True
 for rt in grouped_resets:
-    ax.axvline(rt, color='tomato', ls='--', lw=1.2, alpha=0.85,
-               label='DepthFilter: RESET' if first_reset else '_')
+    ax.axvline(rt, color='tomato', ls='--',label='DepthFilter: RESET' if first_reset else '_')
     first_reset = False
 
 first_init = True
 for (it, pts) in init_times:
-    ax.axvline(it, color='seagreen', ls='-', lw=1.2, alpha=0.85,
-               label='Init: Triangulated' if first_init else '_')
-    ax.text(it + 0.5, vals.max() * 0.85, f'{pts}pt',
-            color='seagreen', fontsize=7, va='top')
+    ax.axvline(it, color='seagreen', ls='-', label='Init: Triangulated' if first_init else '_')
+    #ax.text(it + 0.5, vals.max() * 0.85, f'{pts}pt',color='seagreen', fontsize=7, va='top')
     first_init = False
 
-ax.set(xlabel='Время (с)', ylabel='%CPU  (100% = 1 ядро)',
-       title='CPU svo_node — Raspberry Pi 5, MH_01_easy')
+ax.set(xlabel='Время (с)', ylabel='%CPU',title='CPU svo_node — MH_01_easy')
 ax.legend(fontsize=8)
-ax.grid(True, alpha=0.3)
 fig.tight_layout()
 fig.savefig(os.path.join(out_dir, 'cpu_usage.png'), dpi=150)
 print("График: cpu_usage.png")
