@@ -7,6 +7,7 @@ import numpy as np
 
 out_dir = sys.argv[1]
 
+
 with open(os.path.join(out_dir, "cpu_samples.txt")) as f:
     vals = [float(x) for x in f.read().split() if x.strip()]
 
@@ -17,6 +18,7 @@ if not vals:
 vals = np.array(vals)
 t    = np.arange(len(vals))
 avg  = vals.mean()
+std  = np.std(vals)
 maxi = np.max(vals)
 
 # ── Парсим svo.log ────────────────────────────────────────────────
@@ -72,31 +74,18 @@ ax.axhline(maxi, color='gray', ls='--', label=f'Максимальное: {maxi:
 
 first_reset = True
 for rt in grouped_resets:
-    ax.axvline(rt, color='tomato', ls='--',label='DepthFilter: RESET' if first_reset else '_')
+    ax.axvline(rt, ls='--',label='DepthFilter: RESET' if first_reset else '_')
     first_reset = False
 
 first_init = True
 for (it, pts) in init_times:
-    ax.axvline(it, color='seagreen', ls='-', label='Init: Triangulated' if first_init else '_')
+    ax.axvline(it, color='seagreen', ls='--', label='Init: Triangulated' if first_init else '_')
     #ax.text(it + 0.5, vals.max() * 0.85, f'{pts}pt',color='seagreen', fontsize=7, va='top')
     first_init = False
 
-ax.set(xlabel='Время (с)', ylabel='%CPU',title='CPU svo_node — MH_01_easy')
+ax.set(xlabel='Время (с)', ylabel='%CPU',title='CPU svo_node')
 ax.legend(fontsize=8)
 fig.tight_layout()
 fig.savefig(os.path.join(out_dir, 'cpu_usage.png'), dpi=150)
 print("График: cpu_usage.png")
 
-stats = (
-    f"=== CPU svo_node ===\n"
-    f"  Замеров      : {len(vals)}\n"
-    f"  Среднее      : {avg:.1f}%  (~{avg/100:.2f} ядра из 4)\n"
-    f"  Максимум     : {vals.max():.1f}%\n"
-    f"  Минимум      : {vals.min():.1f}%\n"
-    f"  Стд. откл.   : {vals.std():.1f}%\n"
-    f"  Реинитов     : {len(grouped_resets)}\n"
-    f"  Успешных init: {len(init_times)}\n"
-)
-print(stats)
-with open(os.path.join(out_dir, 'cpu_stats.txt'), 'w') as f:
-    f.write(stats)

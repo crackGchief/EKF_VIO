@@ -11,7 +11,6 @@ def cpu_ticks(pid):
 
 CLK_TCK = os.sysconf("SC_CLK_TCK")
 
-print("Жду svo_node...", flush=True)
 while True:
     r = subprocess.run(["pgrep", "-f", "svo_node"],
                        capture_output=True, text=True)

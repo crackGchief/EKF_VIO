@@ -4,6 +4,11 @@ import argparse
 import os
 from datetime import datetime
 
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+import numpy as np
+
 from evo.tools import file_interface
 from evo.core  import sync, metrics
 
@@ -66,27 +71,51 @@ def evaluate(gt_file, est_file, out_dir, correct_scale=True, max_diff=0.02):
         f.write(f"  Min:    {ate_stats['min']:.4f}\n")
 
     print(f"Результаты сохранены: {out_file}")
+
+    # --- 7. График ATE по времени ---
+    errors = ate_metric.error
+    t0     = traj_gt.timestamps[0]
+    time_ax = traj_gt.timestamps - t0
+
+    fig, ax = plt.subplots(figsize=(12, 4))
+    ax.plot(time_ax, errors, color='steelblue', lw=1, alpha=0.9, label='ATE')
+    ax.fill_between(time_ax, errors, alpha=0.15, color='steelblue')
+    ax.axhline(ate_stats['mean'], color='red',   ls='--', lw=1.2,
+               label=f"mean  = {ate_stats['mean']:.4f} м")
+    ax.axhline(ate_stats['rmse'], color='green', ls=':',  lw=1.5,
+               label=f"rmse  = {ate_stats['rmse']:.4f} м")
+    ax.set(xlabel='Время (с)', ylabel='ATE (м)',
+           title=f'Absolute Trajectory Error — {os.path.basename(out_dir)}')
+    ax.legend(fontsize=9)
+    ax.grid(True, alpha=0.3)
+    fig.tight_layout()
+
+    plot_file = os.path.join(out_dir, 'ate_over_time.png')
+    fig.savefig(plot_file, dpi=150)
+    plt.close()
+    print(f"График сохранён: {plot_file}")
+
     return ate_stats
 
 
 if __name__ == '__main__':
     BASE = os.path.dirname(os.path.abspath(__file__))
+    TRAJ_DIR = os.path.join(BASE, 'trajectory_results')
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('gt_file',
-        nargs='?',
-        default=os.path.join(BASE, 'trajectory_results', 'MH_01_easy.bag_gt.txt'),
-        help='файл groundtruth (TUM формат)')
-    parser.add_argument('est_file',
-        nargs='?',
-        default=os.path.join(BASE, 'trajectory_results', 'MH_01_easy.bag_svo.txt'),
-        help='файл оценки SVO (TUM формат)')
+    parser.add_argument('--bag_name',
+        default='MH_01_easy',
+        help='имя датасета без .bag (например MH_01_easy)')
     parser.add_argument('--out_dir',
-        default=os.path.join(BASE, 'error_results'),
+        default=None,
         help='папка для сохранения результатов')
     parser.add_argument('--no_scale', action='store_true',
         help='не корректировать масштаб (для стерео/IMU)')
     args = parser.parse_args()
 
-    evaluate(args.gt_file, args.est_file, args.out_dir,
-             correct_scale=not args.no_scale)
+    # Пути к файлам строятся из bag_name автоматически
+    gt_file  = os.path.join(TRAJ_DIR, args.bag_name, f"{args.bag_name}_gt.txt")
+    est_file = os.path.join(TRAJ_DIR, args.bag_name, f"{args.bag_name}_svo.txt")
+    out_dir  = args.out_dir or os.path.join(TRAJ_DIR, args.bag_name)
+
+    evaluate(gt_file, est_file, out_dir, correct_scale=not args.no_scale)
