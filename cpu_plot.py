@@ -83,9 +83,12 @@ for (it, pts) in init_times:
     #ax.text(it + 0.5, vals.max() * 0.85, f'{pts}pt',color='seagreen', fontsize=7, va='top')
     first_init = False
 
-ax.set(xlabel='Время (с)', ylabel='%CPU',title='CPU svo_node')
+ax.set(xlabel='Время (с)', ylabel='%CPU',title=f'{os.path.basename(out_dir)}')
 ax.legend(fontsize=8)
 fig.tight_layout()
 fig.savefig(os.path.join(out_dir, 'cpu_usage.png'), dpi=150)
 print("График: cpu_usage.png")
+
+with open("home", "a") as f:
+    f.write(str(avg) + "\n")
 

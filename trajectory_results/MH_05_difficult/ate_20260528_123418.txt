@@ -1,0 +1,13 @@
+GT файл:  /home/mononoki/EKF_VIO/trajectory_results/MH_05_difficult/MH_05_difficult_gt.txt
+SVO файл: /home/mononoki/EKF_VIO/trajectory_results/MH_05_difficult/MH_05_difficult_svo.txt
+Выравнивание: Sim3 (с коррекцией масштаба)
+GT поз: 818
+SVO поз: 818
+
+ATE (м):
+  RMSE:   2.2866
+  Mean:   1.9705
+  Median: 1.7972
+  Std:    1.1601
+  Max:    4.5443
+  Min:    0.1048

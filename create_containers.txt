@@ -1,0 +1,5 @@
+# svo_test1 (bag benchmarking)
+docker run -it   --name svo_test1   -v /home/mononoki/EKF_VIO/trajectory_results:/results   -v /home/mononoki/Datasets:/bags:ro   -v /tmp/.X11-unix:/tmp/.X11-unix:rw   -e DISPLAY=:0   svo_arm:latest bash
+
+# svo_live (live USB camera)
+docker run -it   --name svo_live   --device /dev/video0:/dev/video0   --device /dev/video1:/dev/video1   --group-add video   -v /home/mononoki/EKF_VIO/trajectory_results:/results   -v /home/mononoki/EKF_VIO:/ekf_vio   -v /tmp/.X11-unix:/tmp/.X11-unix:rw   -e DISPLAY=:0   svo_arm:latest bash
